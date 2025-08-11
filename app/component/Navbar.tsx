@@ -43,7 +43,7 @@ const Navbar = () => {
   );
 
   return (
-    <div className="w-full max-w-[1600px] mx-auto px-3 py-7 bg-blue-100 flex  justify-center sm:flex-row sm:items-end sm:justify-end gap-12">
+    <div className="bg-[#d0dfe3] w-full max-w-[1600px] mx-auto px-3 py-7 flex  justify-center sm:flex-row sm:items-end sm:justify-end gap-12">
       
       {/* Select Department */}
       <div className="relative">
