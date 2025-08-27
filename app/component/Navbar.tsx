@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import man from "@/public/man.png"
+
 const departments = [
   "Diş Hekimliği",
   "Ortodonti",
@@ -12,7 +12,7 @@ const departments = [
 ];
 
 const adminList = [
-    "Admin",
+  "Admin",
   "Dr. Ayşe Yılmaz",
   "Dr. Mehmet Can",
   "Dr. Elif Kaya",
@@ -43,8 +43,7 @@ const Navbar = () => {
   );
 
   return (
-    <div className="bg-[#d0dfe3] w-full max-w-[1600px] mx-auto px-3 py-7 flex  justify-center sm:flex-row sm:items-end sm:justify-end gap-12">
-      
+    <div className=" w-full max-w-[1600px] mx-auto px-3 py-7 flex justify-end items-center gap-6">
       {/* Select Department */}
       <div className="relative">
         <input
@@ -56,7 +55,7 @@ const Navbar = () => {
           }}
           onClick={() => setIsDepOpen(true)}
           placeholder="Select Department"
-          className="px-1 py-1 w-70 border border-gray-300 rounded-md focus:outline-blue-400"
+          className="px-2 py-1 w-60 border border-gray-300 rounded-md focus:outline-blue-400"
         />
         {isDepOpen && (
           <ul className="absolute left-0 mt-1 w-64 bg-white border border-gray-300 rounded-md shadow-lg z-50 max-h-60 overflow-auto">
@@ -78,16 +77,15 @@ const Navbar = () => {
       </div>
 
       {/* Select Admin */}
-      <div className="relative w-30">
-        <img src="/man.png" alt="man" className="absolute mt-1 ml-[-40px] " />
+      <div className="relative w-40">
         <div
           onClick={() => setIsAdminOpen((prev) => !prev)}
-          className="px-1 py-1  border border-gray-300 rounded-md cursor-pointer"
+          className="px-2 py-1 border border-gray-300 rounded-md cursor-pointer bg-white"
         >
-          {selectedAdmin || " Admin"}
+          {selectedAdmin || "Admin"}
         </div>
         {isAdminOpen && (
-          <ul className="absolute left-0 mt-1 w-full border border-gray-300 rounded-md shadow-lg  overflow-auto">
+          <ul className="absolute left-0 mt-1 w-full border border-gray-300 rounded-md shadow-lg bg-white">
             {adminList.map((admin, i) => (
               <li
                 key={i}
