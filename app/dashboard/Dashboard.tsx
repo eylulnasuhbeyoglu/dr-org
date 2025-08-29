@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
+import { Calendar } from "react-calendar";
+import "react-calendar/dist/Calendar.css";
 
 type Status = "Onaylı" | "Beklemede" | "İptal";
 
@@ -38,7 +40,7 @@ const initialAppointments: Appointment[] = [
     phone: "0555 555 55 55",
     email: "ahmet@example.com",
     doctor: SAMPLE_DOCTORS[0],
-    datetime: new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString(),
+    datetime: new Date(Date.now() + 1000 * 60 * 60 * 9).toISOString(),
     status: "Onaylı",
     notes: "Kontrol randevusu",
   },
@@ -47,7 +49,7 @@ const initialAppointments: Appointment[] = [
     patientName: "Elif Demir",
     phone: "0553 333 33 33",
     doctor: SAMPLE_DOCTORS[1],
-    datetime: new Date(Date.now() + 1000 * 60 * 60 * 48).toISOString(),
+    datetime: new Date(Date.now() + 1000 * 60 * 60 * 11).toISOString(),
     status: "Beklemede",
   },
   {
@@ -55,7 +57,7 @@ const initialAppointments: Appointment[] = [
     patientName: "Mehmet Arslan",
     phone: "0554 444 44 44",
     doctor: SAMPLE_DOCTORS[2],
-    datetime: new Date(Date.now() + 1000 * 60 * 60 * 72).toISOString(),
+    datetime: new Date(Date.now() + 1000 * 60 * 60 * 14).toISOString(),
     status: "İptal",
   },
 ];
@@ -66,8 +68,6 @@ export default function AppointmentDashboard() {
   // Filters
   const [selectedDoctor, setSelectedDoctor] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string>("");
-  const [dateFrom, setDateFrom] = useState<string>("");
-  const [dateTo, setDateTo] = useState<string>("");
   const [searchQ, setSearchQ] = useState<string>("");
 
   // Modal & editing
@@ -87,6 +87,9 @@ export default function AppointmentDashboard() {
   };
   const [form, setForm] = useState<Partial<Appointment>>(emptyForm);
 
+  // Takvim
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+
   useEffect(() => {
     if (!isModalOpen) {
       setForm(emptyForm);
@@ -103,8 +106,8 @@ export default function AppointmentDashboard() {
     return appointments.filter((a) => {
       if (selectedDoctor && a.doctor !== selectedDoctor) return false;
       if (statusFilter && a.status !== statusFilter) return false;
-      if (dateFrom && new Date(a.datetime) < new Date(dateFrom + "T00:00:00")) return false;
-      if (dateTo && new Date(a.datetime) > new Date(dateTo + "T23:59:59")) return false;
+      const aDate = new Date(a.datetime);
+      if (selectedDate && aDate.toDateString() !== selectedDate.toDateString()) return false;
       if (searchQ) {
         const q = searchQ.toLowerCase();
         if (!a.patientName.toLowerCase().includes(q) &&
@@ -113,7 +116,7 @@ export default function AppointmentDashboard() {
       }
       return true;
     });
-  }, [appointments, selectedDoctor, statusFilter, dateFrom, dateTo, searchQ]);
+  }, [appointments, selectedDoctor, statusFilter, searchQ, selectedDate]);
 
   // CRUD
   const addAppointment = (payload: Partial<Appointment>) => {
@@ -157,89 +160,68 @@ export default function AppointmentDashboard() {
     s === "Beklemede" ? "bg-yellow-100 text-yellow-800" :
     "bg-red-100 text-red-800";
 
-  const appointmentsByDoctor = useMemo(() => {
-    const group: Record<string, Appointment[]> = {};
-    doctors.forEach(doc => group[doc] = []);
-    filtered.forEach(a => (group[a.doctor] || group["Notlar "])?.push(a));
-    return group;
-  }, [filtered, doctors]);
+  const hours = Array.from({ length: 10 }, (_, i) => 9 + i); // 9'dan 18'e
+
+  const appointmentsByDoctorAndHour: Record<string, Record<number, Appointment | null>> = {};
+  doctors.forEach((doc) => {
+    appointmentsByDoctorAndHour[doc] = {};
+    hours.forEach((h) => {
+      const slot = filtered.find(a => a.doctor === doc && new Date(a.datetime).getHours() === h);
+      appointmentsByDoctorAndHour[doc][h] = slot || null;
+    });
+  });
 
   return (
     <div className="flex h-screen w-screen bg-gray-50 text-gray-800 overflow-hidden">
-      {/* Dashboard alanı, sidebar genişliğini boşluk bırakacak */}
-      <div className="flex-1 ml-64 flex flex-col overflow-hidden">
-        <div className="flex-1 flex flex-col p-4 gap-4 overflow-hidden">
-          {/* Controls */}
-          <div className="bg-white rounded-lg shadow-sm p-4 flex flex-wrap gap-2">
-            <input
-              className="border rounded px-3 py-2 w-56"
-              placeholder="Ara: hasta/hekim/ID"
-              value={searchQ}
-              onChange={(e) => setSearchQ(e.target.value)}
-            />
-            <select
-              className="border rounded px-3 py-2"
-              value={selectedDoctor}
-              onChange={(e) => setSelectedDoctor(e.target.value)}
-            >
-              <option value="">Tüm Hekimler</option>
-              {doctors.map(d => <option key={d} value={d}>{d}</option>)}
-            </select>
-            <select
-              className="border rounded px-3 py-2"
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-            >
-              <option value="">Tüm Durumlar</option>
-              <option value="Onaylı">Onaylı</option>
-              <option value="Beklemede">Beklemede</option>
-              <option value="İptal">İptal</option>
-            </select>
-            <input type="date" className="border rounded px-3 py-2" value={dateFrom} onChange={e => setDateFrom(e.target.value)} />
-            <input type="date" className="border rounded px-3 py-2" value={dateTo} onChange={e => setDateTo(e.target.value)} />
-            <button
-              className="px-3 py-2 bg-purple-600 text-white rounded"
-              onClick={() => { setSelectedDoctor(""); setStatusFilter(""); setDateFrom(""); setDateTo(""); setSearchQ(""); }}
-            >
-              Temizle
-            </button>
-            <div className="ml-auto flex items-center gap-2">
-              <div>Toplam: {filtered.length}</div>
-              <button
-                className="px-3 py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded"
-                onClick={() => setIsModalOpen(true)}
-              >
-                + Yeni Randevu
-              </button>
-            </div>
-          </div>
-
-          {/* Randevular sütunlar */}
-          <div className="flex-1 flex gap-4 overflow-x-auto p-2">
-            {doctors.map(doctor => {
-              const colors = doctorColors[doctor] || { headerBg: "bg-gray-300", cardBg: "bg-gray-100" };
-              return (
-                <div key={doctor} className="flex flex-col w-64 min-w-[16rem] border border-gray-300 rounded">
-                  <h4 className={`font-semibold mb-2 pb-1 rounded-t px-3 ${colors.headerBg}`}>{doctor}</h4>
-                  <div className="flex-1 overflow-y-auto p-2">
-                    {appointmentsByDoctor[doctor]?.length ? appointmentsByDoctor[doctor].map(a => (
+      {/* Sol: Slotlar */}
+      <div className="flex-1 flex flex-col ml-4 p-4 gap-4 overflow-x-auto">
+        <div className="flex gap-4">
+          {doctors.map((doctor) => {
+            const colors = doctorColors[doctor] || { headerBg: "bg-gray-300", cardBg: "bg-gray-100" };
+            return (
+              <div key={doctor} className="flex flex-col w-64 min-w-[16rem] border border-gray-300 rounded">
+                <h4 className={`font-semibold mb-2 pb-1 rounded-t px-3 ${colors.headerBg}`}>{doctor}</h4>
+                <div className="flex-1 flex flex-col">
+                  {hours.map((h) => {
+                    const a = appointmentsByDoctorAndHour[doctor][h];
+                    return a ? (
                       <div
-                        key={a.id}
-                        className={`${colors.cardBg} rounded shadow p-3 mb-2 cursor-pointer hover:bg-opacity-80`}
+                        key={h}
+                        className={`${colors.cardBg} rounded shadow p-2 mb-2 cursor-pointer hover:bg-opacity-80`}
                         onClick={() => openEdit(a)}
-                        title={`${a.patientName} - ${formatDateTime(a.datetime)}`}
                       >
                         <div className="font-medium">{a.patientName}</div>
-                        <div className="text-xs text-gray-700">{formatDateTime(a.datetime)}</div>
+                        {a.notes && <div className="text-xs text-gray-700">{a.notes}</div>}
                         <span className={`px-1 py-0.5 rounded text-xs ${statusColor(a.status)}`}>{a.status}</span>
+                        <div className="text-xs text-gray-600">{h}:00</div>
                       </div>
-                    )) : <div className="text-gray-400 text-sm p-2">Kayıt yok</div>}
-                  </div>
+                    ) : (
+                      <div
+                        key={h}
+                        className="h-16 border-b border-gray-200 cursor-pointer flex items-center justify-center text-gray-400 text-sm"
+                        onClick={() => {
+                          setForm({ ...emptyForm, doctor: doctor, datetime: new Date(selectedDate).setHours(h, 0, 0, 0) });
+                          setIsModalOpen(true);
+                        }}
+                      >
+                        {h}:00
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })}
         </div>
+      </div>
+
+      {/* Sağ: Takvim */}
+      <div className="w-80 bg-white border-l shadow p-4 overflow-y-auto">
+        <h2 className="text-lg font-semibold mb-4">Takvim</h2>
+        <Calendar
+          value={selectedDate}
+          onChange={(value) => setSelectedDate(value as Date)}
+        />
       </div>
 
       {/* Modal */}
@@ -273,7 +255,7 @@ export default function AppointmentDashboard() {
                 <option value="">Hekim Seç *</option>
                 {doctors.map(d => <option key={d} value={d}>{d}</option>)}
               </select>
-              <input type="datetime-local" className="border rounded px-3 py-2" value={form.datetime ? form.datetime.substring(0,16) : ""} onChange={e => setForm(f => ({ ...f, datetime: e.target.value }))} required />
+              <input type="datetime-local" className="border rounded px-3 py-2" value={form.datetime ? new Date(form.datetime).toISOString().substring(0,16) : ""} onChange={e => setForm(f => ({ ...f, datetime: e.target.value }))} required />
               <select className="border rounded px-3 py-2" value={form.status || "Beklemede"} onChange={e => setForm(f => ({ ...f, status: e.target.value as Status }))}>
                 <option value="Beklemede">Beklemede</option>
                 <option value="Onaylı">Onaylı</option>

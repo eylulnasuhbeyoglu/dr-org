@@ -4,7 +4,7 @@ import React, { useMemo, useState } from "react";
 
 /** ---------- Veri ---------- */
 type Procedure = { tooth: number; treatment: string; note?: string };
-
+ 
 const TREATMENTS = [
   "Dolgu (Kompozit)",
   "Kanal Tedavisi",
