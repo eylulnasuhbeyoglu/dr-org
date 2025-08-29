@@ -40,7 +40,7 @@ const initialAppointments: Appointment[] = [
     phone: "0555 555 55 55",
     email: "ahmet@example.com",
     doctor: SAMPLE_DOCTORS[0],
-    datetime: new Date(Date.now() + 1000 * 60 * 60 * 9).toISOString(),
+    datetime: new Date().setHours(9, 0, 0, 0).toString(),
     status: "Onaylı",
     notes: "Kontrol randevusu",
   },
@@ -49,7 +49,7 @@ const initialAppointments: Appointment[] = [
     patientName: "Elif Demir",
     phone: "0553 333 33 33",
     doctor: SAMPLE_DOCTORS[1],
-    datetime: new Date(Date.now() + 1000 * 60 * 60 * 11).toISOString(),
+    datetime: new Date().setHours(11, 0, 0, 0).toString(),
     status: "Beklemede",
   },
   {
@@ -57,7 +57,7 @@ const initialAppointments: Appointment[] = [
     patientName: "Mehmet Arslan",
     phone: "0554 444 44 44",
     doctor: SAMPLE_DOCTORS[2],
-    datetime: new Date(Date.now() + 1000 * 60 * 60 * 14).toISOString(),
+    datetime: new Date().setHours(14, 0, 0, 0).toString(),
     status: "İptal",
   },
 ];
@@ -65,16 +65,13 @@ const initialAppointments: Appointment[] = [
 export default function AppointmentDashboard() {
   const [appointments, setAppointments] = useState<Appointment[]>(initialAppointments);
 
-  // Filters
   const [selectedDoctor, setSelectedDoctor] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [searchQ, setSearchQ] = useState<string>("");
 
-  // Modal & editing
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editing, setEditing] = useState<Appointment | null>(null);
 
-  // Form state for add/edit
   const emptyForm: Partial<Appointment> = {
     patientName: "",
     patientId: "",
@@ -87,8 +84,8 @@ export default function AppointmentDashboard() {
   };
   const [form, setForm] = useState<Partial<Appointment>>(emptyForm);
 
-  // Takvim
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [now, setNow] = useState(new Date());
 
   useEffect(() => {
     if (!isModalOpen) {
@@ -96,6 +93,12 @@ export default function AppointmentDashboard() {
       setEditing(null);
     }
   }, [isModalOpen]);
+
+  // zamanı dakika başı güncelle
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 60 * 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const doctors = useMemo(() => {
     const fromAppointments = Array.from(new Set(appointments.map((a) => a.doctor))).filter(Boolean);
@@ -118,7 +121,6 @@ export default function AppointmentDashboard() {
     });
   }, [appointments, selectedDoctor, statusFilter, searchQ, selectedDate]);
 
-  // CRUD
   const addAppointment = (payload: Partial<Appointment>) => {
     const newItem: Appointment = {
       id: String(Date.now()),
@@ -154,13 +156,12 @@ export default function AppointmentDashboard() {
     setIsModalOpen(false);
   };
 
-  const formatDateTime = (iso?: string) => iso ? new Date(iso).toLocaleString() : "-";
   const statusColor = (s: Status) =>
     s === "Onaylı" ? "bg-green-100 text-green-800" :
     s === "Beklemede" ? "bg-yellow-100 text-yellow-800" :
     "bg-red-100 text-red-800";
 
-  const hours = Array.from({ length: 10 }, (_, i) => 9 + i); // 9'dan 18'e
+  const hours = Array.from({ length: 10 }, (_, i) => 9 + i);
 
   const appointmentsByDoctorAndHour: Record<string, Record<number, Appointment | null>> = {};
   doctors.forEach((doc) => {
@@ -171,48 +172,69 @@ export default function AppointmentDashboard() {
     });
   });
 
+  const currentHour = now.getHours();
+  const currentMinutes = now.getMinutes();
+
   return (
     <div className="flex h-screen w-screen bg-gray-50 text-gray-800 overflow-hidden">
-      {/* Sol: Slotlar */}
-      <div className="flex-1 flex flex-col ml-4 p-4 gap-4 overflow-x-auto">
-        <div className="flex gap-4">
-          {doctors.map((doctor) => {
-            const colors = doctorColors[doctor] || { headerBg: "bg-gray-300", cardBg: "bg-gray-100" };
-            return (
-              <div key={doctor} className="flex flex-col w-64 min-w-[16rem] border border-gray-300 rounded">
-                <h4 className={`font-semibold mb-2 pb-1 rounded-t px-3 ${colors.headerBg}`}>{doctor}</h4>
-                <div className="flex-1 flex flex-col">
-                  {hours.map((h) => {
-                    const a = appointmentsByDoctorAndHour[doctor][h];
-                    return a ? (
-                      <div
-                        key={h}
-                        className={`${colors.cardBg} rounded shadow p-2 mb-2 cursor-pointer hover:bg-opacity-80`}
-                        onClick={() => openEdit(a)}
-                      >
-                        <div className="font-medium">{a.patientName}</div>
-                        {a.notes && <div className="text-xs text-gray-700">{a.notes}</div>}
-                        <span className={`px-1 py-0.5 rounded text-xs ${statusColor(a.status)}`}>{a.status}</span>
-                        <div className="text-xs text-gray-600">{h}:00</div>
-                      </div>
-                    ) : (
-                      <div
-                        key={h}
-                        className="h-16 border-b border-gray-200 cursor-pointer flex items-center justify-center text-gray-400 text-sm"
-                        onClick={() => {
-                          setForm({ ...emptyForm, doctor: doctor, datetime: new Date(selectedDate).setHours(h, 0, 0, 0) });
-                          setIsModalOpen(true);
-                        }}
-                      >
-                        {h}:00
-                      </div>
-                    );
-                  })}
-                </div>
+      {/* Sol: Saatler */}
+      <div className="ml-60 flex flex-col w-12 items-center text-gray-500 text-xs p-2 border-r border-gray-300">
+        {hours.map((h) => (
+          <div key={h} className="h-16 flex items-center justify-center border-b border-gray-200">
+            {h}:00
+          </div>
+        ))}
+      </div>
+
+      {/* Orta: Doktor Slotları */}
+      <div className="flex-1 flex gap-2  p-4 overflow-x-auto relative">
+        {doctors.map((doctor) => {
+          const colors = doctorColors[doctor] || { headerBg: "bg-gray-300", cardBg: "bg-gray-100" };
+          return (
+            <div key={doctor} className="flex flex-col w-64 min-w-[16rem] border border-gray-300 rounded relative">
+              <h4 className={`font-semibold mb-2 pb-1 rounded-t px-3 ${colors.headerBg}`}>{doctor}</h4>
+              <div className="flex-1 flex flex-col relative">
+                {hours.map((h) => {
+                  const a = appointmentsByDoctorAndHour[doctor][h];
+                  return (
+                    <div
+                      key={h}
+                      className="h-16 border-b border-gray-200 cursor-pointer relative"
+                      onClick={() => {
+                        const d = new Date(selectedDate);
+                        d.setHours(h, 0, 0, 0);
+                        setForm({ ...emptyForm, doctor: doctor, datetime: d.toISOString() });
+                        setIsModalOpen(true);
+                      }}
+                    >
+                      {a && (
+                        <div
+                          className={`${colors.cardBg} rounded shadow p-2 w-full`}
+                          onClick={() => openEdit(a)}
+                        >
+                          <div className="font-medium">{a.patientName}</div>
+                          {a.notes && <div className="text-xs text-gray-700">{a.notes}</div>}
+                          <span className={`px-1 py-0.5 rounded text-xs ${statusColor(a.status)}`}>
+                            {a.status}
+                          </span>
+                        </div>
+                      )}
+                      {/* Current time indicator */}
+                      {h === currentHour && (
+                        <div
+                          className="absolute left-0 w-full bg-red-500 h-0.5"
+                          style={{ top: `${(currentMinutes / 60) * 64}px` }}
+                        >
+                          <div className="absolute -left-2 -top-1 w-4 h-4 bg-red-500 rounded-full"></div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
-            );
-          })}
-        </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Sağ: Takvim */}
@@ -230,41 +252,92 @@ export default function AppointmentDashboard() {
           <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">{editing ? "Randevu Düzenle" : "Yeni Randevu Ekle"}</h3>
-              <button className="text-gray-500 text-xl leading-none" onClick={() => setIsModalOpen(false)}>✕</button>
+              <button
+                className="text-gray-500 text-xl leading-none"
+                onClick={() => setIsModalOpen(false)}
+              >
+                ✕
+              </button>
             </div>
-
             <form onSubmit={handleFormSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div className="col-span-1 md:col-span-2 flex gap-2">
                 <input
                   className="flex-1 border rounded px-3 py-2"
                   placeholder="Hasta Adı Soyadı *"
                   value={form.patientName || ""}
-                  onChange={(e) => setForm(f => ({ ...f, patientName: e.target.value }))}
+                  onChange={(e) => setForm((f) => ({ ...f, patientName: e.target.value }))}
                   required
                 />
                 <input
                   className="w-48 border rounded px-3 py-2"
                   placeholder="TC / Hasta ID"
                   value={form.patientId || ""}
-                  onChange={(e) => setForm(f => ({ ...f, patientId: e.target.value }))}
+                  onChange={(e) => setForm((f) => ({ ...f, patientId: e.target.value }))}
                 />
               </div>
-              <input className="border rounded px-3 py-2" placeholder="Telefon *" value={form.phone || ""} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} required />
-              <input className="border rounded px-3 py-2" placeholder="E-posta" value={form.email || ""} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
-              <select className="border rounded px-3 py-2" value={form.doctor || ""} onChange={e => setForm(f => ({ ...f, doctor: e.target.value }))} required>
+              <input
+                className="border rounded px-3 py-2"
+                placeholder="Telefon *"
+                value={form.phone || ""}
+                onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+                required
+              />
+              <input
+                className="border rounded px-3 py-2"
+                placeholder="E-posta"
+                value={form.email || ""}
+                onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+              />
+              <select
+                className="border rounded px-3 py-2"
+                value={form.doctor || ""}
+                onChange={(e) => setForm((f) => ({ ...f, doctor: e.target.value }))}
+                required
+              >
                 <option value="">Hekim Seç *</option>
-                {doctors.map(d => <option key={d} value={d}>{d}</option>)}
+                {doctors.map((d) => (
+                  <option key={d} value={d}>
+                    {d}
+                  </option>
+                ))}
               </select>
-              <input type="datetime-local" className="border rounded px-3 py-2" value={form.datetime ? new Date(form.datetime).toISOString().substring(0,16) : ""} onChange={e => setForm(f => ({ ...f, datetime: e.target.value }))} required />
-              <select className="border rounded px-3 py-2" value={form.status || "Beklemede"} onChange={e => setForm(f => ({ ...f, status: e.target.value as Status }))}>
+              <input
+                type="datetime-local"
+                className="border rounded px-3 py-2"
+                value={form.datetime ? new Date(form.datetime).toISOString().substring(0, 16) : ""}
+                onChange={(e) => setForm((f) => ({ ...f, datetime: e.target.value }))}
+                required
+              />
+              <select
+                className="border rounded px-3 py-2"
+                value={form.status || "Beklemede"}
+                onChange={(e) => setForm((f) => ({ ...f, status: e.target.value as Status }))}
+              >
                 <option value="Beklemede">Beklemede</option>
                 <option value="Onaylı">Onaylı</option>
                 <option value="İptal">İptal</option>
               </select>
-              <textarea className="col-span-1 md:col-span-2 border rounded px-3 py-2" placeholder="Not / Açıklama" value={form.notes || ""} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} rows={3} />
+              <textarea
+                className="col-span-1 md:col-span-2 border rounded px-3 py-2"
+                placeholder="Not / Açıklama"
+                value={form.notes || ""}
+                onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
+                rows={3}
+              />
               <div className="col-span-1 md:col-span-2 flex justify-end gap-2">
-                <button type="button" className="px-4 py-2 border rounded" onClick={() => setIsModalOpen(false)}>İptal</button>
-                <button type="submit" className="px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded">Kaydet</button>
+                <button
+                  type="button"
+                  className="px-4 py-2 border rounded"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  İptal
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded"
+                >
+                  Kaydet
+                </button>
               </div>
             </form>
           </div>
