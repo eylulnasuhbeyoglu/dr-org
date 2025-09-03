@@ -176,9 +176,9 @@ export default function AppointmentDashboard() {
   const currentMinutes = now.getMinutes();
 
   return (
-    <div className="flex h-screen w-screen bg-gray-50 text-gray-800 overflow-hidden">
+    <div className=" ml-20 flex h-screen w-screen bg-gray-50 text-gray-800 overflow-hidden">
       {/* Sol: Saatler */}
-      <div className="ml-60 flex flex-col w-12 items-center text-gray-500 text-xs p-2 border-r border-gray-300">
+      <div className=" flex flex-col w-12 items-center text-gray-500 text-xs p-2 border-r border-gray-300">
         {hours.map((h) => (
           <div key={h} className="h-16 flex items-center justify-center border-b border-gray-200">
             {h}:00
@@ -238,7 +238,7 @@ export default function AppointmentDashboard() {
       </div>
 
       {/* Sağ: Takvim */}
-      <div className="w-80 bg-white border-l shadow p-4 overflow-y-auto">
+      <div className="mr-20 w-80 bg-white border-l shadow p-4 overflow-y-auto">
         <h2 className="text-lg font-semibold mb-4">Takvim</h2>
         <Calendar
           value={selectedDate}

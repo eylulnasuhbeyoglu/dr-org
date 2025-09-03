@@ -40,7 +40,7 @@ const HastaListesi = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="ml-60 min-h-screen bg-gray-50">
   
 <Sidebar/>
       {/* İçerik */}

@@ -1,15 +1,31 @@
-import React from 'react'
-import Navbar from "../component/Navbar"
-import Sidebar from '../component/Sidebar';
-import Dashboard from './Dashboard';
-const dashboard = () => {
-  return (
-    <div>
-<Navbar/>
-<Sidebar/>
-<Dashboard/>
-    </div>
-  )
-}
+"use client";
 
-export default dashboard;
+import React, { useState } from "react";
+import Sidebar from "../component/Sidebar";
+import AppointmentDashboard from "./Dashboard";
+
+export default function DashboardPage() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // toggleSidebar fonksiyonu eklendi
+  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
+
+  return (
+    <div className="flex h-screen w-screen overflow-hidden">
+      {/* Sidebar */}
+      <Sidebar
+        isOpen={isSidebarOpen}
+        setIsOpen={setIsSidebarOpen}
+        toggleSidebar={toggleSidebar} // ✅ eklendi
+      />
+
+      {/* Dashboard içeriği */}
+      <div
+        className="flex-1 transition-all duration-300"
+        style={{ marginLeft: isSidebarOpen ? 256 : 0 }}
+      >
+        <AppointmentDashboard />
+      </div>
+    </div>
+  );
+}
