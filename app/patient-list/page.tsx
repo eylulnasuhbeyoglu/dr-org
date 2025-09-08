@@ -40,12 +40,12 @@ const HastaListesi = () => {
   );
 
   return (
-    <div className="ml-60 min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50">
   
-<Sidebar/>
+
       {/* İçerik */}
-      <main className="p-6">
-        <h2 className="ml-9 text-2xl font-bold mb-5">Hasta Kayıt Listesi</h2>
+      <main className="p-4 md:p-6">
+        <h2 className="text-2xl font-bold mb-5">Hasta Kayıt Listesi</h2>
 
         {/* Arama ve Filtre */}
         <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -76,9 +76,9 @@ const HastaListesi = () => {
                 <th className="p-3">Fotoğraf</th>
                 <th className="p-3">Ad Soyad</th>
                 <th className="p-3">TC Kimlik</th>
-                <th className="p-3">Telefon</th>
-                <th className="p-3">Doktor</th>
-                <th className="p-3">Kayıt Tarihi</th>
+                <th className="p-3 hidden sm:table-cell">Telefon</th>
+                <th className="p-3 hidden md:table-cell">Doktor</th>
+                <th className="p-3 hidden lg:table-cell">Kayıt Tarihi</th>
                 <th className="p-3 text-center">İşlemler</th>
               </tr>
             </thead>
@@ -100,11 +100,9 @@ const HastaListesi = () => {
                   </td>
                   <td className="p-3">{p.name}</td>
                   <td className="p-3">{p.tcNo}</td>
-                  <td className="p-3">{p.phone}</td>
-                  <td className="p-3">{p.doctor}</td>
-                  <td className="p-3">
-                    {new Date(p.createdAt).toLocaleDateString("tr-TR")}
-                  </td>
+                  <td className="p-3 hidden sm:table-cell">{p.phone}</td>
+                  <td className="p-3 hidden md:table-cell">{p.doctor}</td>
+                  <td className="p-3 hidden lg:table-cell">{new Date(p.createdAt).toLocaleDateString("tr-TR")}</td>
                   <td className="p-3 flex gap-2 justify-center">
                     <button
                       onClick={() => alert(JSON.stringify(p, null, 2))}

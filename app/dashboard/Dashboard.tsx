@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Calendar } from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 
@@ -40,7 +41,7 @@ const initialAppointments: Appointment[] = [
     phone: "0555 555 55 55",
     email: "ahmet@example.com",
     doctor: SAMPLE_DOCTORS[0],
-    datetime: new Date().setHours(9, 0, 0, 0).toString(),
+    datetime: new Date(new Date().setHours(9, 0, 0, 0)).toISOString(),
     status: "Onaylı",
     notes: "Kontrol randevusu",
   },
@@ -49,7 +50,7 @@ const initialAppointments: Appointment[] = [
     patientName: "Elif Demir",
     phone: "0553 333 33 33",
     doctor: SAMPLE_DOCTORS[1],
-    datetime: new Date().setHours(11, 0, 0, 0).toString(),
+    datetime: new Date(new Date().setHours(11, 0, 0, 0)).toISOString(),
     status: "Beklemede",
   },
   {
@@ -57,12 +58,13 @@ const initialAppointments: Appointment[] = [
     patientName: "Mehmet Arslan",
     phone: "0554 444 44 44",
     doctor: SAMPLE_DOCTORS[2],
-    datetime: new Date().setHours(14, 0, 0, 0).toString(),
+    datetime: new Date(new Date().setHours(14, 0, 0, 0)).toISOString(),
     status: "İptal",
   },
 ];
 
 export default function AppointmentDashboard() {
+  const router = useRouter();
   const [appointments, setAppointments] = useState<Appointment[]>(initialAppointments);
 
   const [selectedDoctor, setSelectedDoctor] = useState<string>("");
@@ -84,8 +86,38 @@ export default function AppointmentDashboard() {
   };
   const [form, setForm] = useState<Partial<Appointment>>(emptyForm);
 
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [now, setNow] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [now, setNow] = useState<Date | null>(null);
+
+  const [currentHour, setCurrentHour] = useState<number | null>(null);
+  const [currentMinutes, setCurrentMinutes] = useState<number | null>(null);
+
+  // Sağ tık menüsü durumu
+  const [contextMenu, setContextMenu] = useState<{
+    visible: boolean;
+    x: number;
+    y: number;
+    appointment: Appointment | null;
+  }>({ visible: false, x: 0, y: 0, appointment: null });
+
+  useEffect(() => {
+    setSelectedDate(new Date());
+    setNow(new Date());
+
+    const timer = setInterval(() => {
+      const n = new Date();
+      setNow(n);
+      setCurrentHour(n.getHours());
+      setCurrentMinutes(n.getMinutes());
+    }, 60 * 1000);
+
+    // ilk değer mount olduğunda da set edilsin
+    const init = new Date();
+    setCurrentHour(init.getHours());
+    setCurrentMinutes(init.getMinutes());
+
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     if (!isModalOpen) {
@@ -93,12 +125,6 @@ export default function AppointmentDashboard() {
       setEditing(null);
     }
   }, [isModalOpen]);
-
-  // zamanı dakika başı güncelle
-  useEffect(() => {
-    const timer = setInterval(() => setNow(new Date()), 60 * 1000);
-    return () => clearInterval(timer);
-  }, []);
 
   const doctors = useMemo(() => {
     const fromAppointments = Array.from(new Set(appointments.map((a) => a.doctor))).filter(Boolean);
@@ -109,8 +135,10 @@ export default function AppointmentDashboard() {
     return appointments.filter((a) => {
       if (selectedDoctor && a.doctor !== selectedDoctor) return false;
       if (statusFilter && a.status !== statusFilter) return false;
-      const aDate = new Date(a.datetime);
-      if (selectedDate && aDate.toDateString() !== selectedDate.toDateString()) return false;
+      if (selectedDate) {
+        const aDate = new Date(a.datetime);
+        if (aDate.toDateString() !== selectedDate.toDateString()) return false;
+      }
       if (searchQ) {
         const q = searchQ.toLowerCase();
         if (!a.patientName.toLowerCase().includes(q) &&
@@ -146,6 +174,37 @@ export default function AppointmentDashboard() {
     setIsModalOpen(true);
   };
 
+  const openContextMenu = (e: React.MouseEvent, a: Appointment) => {
+    e.preventDefault();
+    // Basit sınır kontrolü: menü ekran dışına taşmasın
+    const MENU_WIDTH = 220;
+    const MENU_HEIGHT = 140;
+    const viewportW = window.innerWidth;
+    const viewportH = window.innerHeight;
+    let x = e.clientX;
+    let y = e.clientY;
+    if (x + MENU_WIDTH > viewportW) x = viewportW - MENU_WIDTH - 8;
+    if (y + MENU_HEIGHT > viewportH) y = viewportH - MENU_HEIGHT - 8;
+    setContextMenu({ visible: true, x, y, appointment: a });
+  };
+
+  const closeContextMenu = () => setContextMenu((s) => ({ ...s, visible: false }));
+
+  useEffect(() => {
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeContextMenu();
+    };
+    const onClick = () => closeContextMenu();
+    if (contextMenu.visible) {
+      window.addEventListener("keydown", onEsc);
+      window.addEventListener("click", onClick);
+    }
+    return () => {
+      window.removeEventListener("keydown", onEsc);
+      window.removeEventListener("click", onClick);
+    };
+  }, [contextMenu.visible]);
+
   const handleFormSubmit = (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!form.patientName || !form.phone || !form.doctor || !form.datetime) {
@@ -172,13 +231,10 @@ export default function AppointmentDashboard() {
     });
   });
 
-  const currentHour = now.getHours();
-  const currentMinutes = now.getMinutes();
-
   return (
-    <div className=" ml-20 flex h-screen w-screen bg-gray-50 text-gray-800 overflow-hidden">
+    <div className=" flex h-screen w-screen bg-gray-50 text-gray-800 overflow-hidden">
       {/* Sol: Saatler */}
-      <div className=" flex flex-col w-12 items-center text-gray-500 text-xs p-2 border-r border-gray-300">
+      <div className="ml-2 flex flex-col w-12 items-center text-gray-500 text-xs p-2 border-r border-gray-300">
         {hours.map((h) => (
           <div key={h} className="h-16 flex items-center justify-center border-b border-gray-200">
             {h}:00
@@ -187,7 +243,7 @@ export default function AppointmentDashboard() {
       </div>
 
       {/* Orta: Doktor Slotları */}
-      <div className="flex-1 flex gap-2  p-4 overflow-x-auto relative">
+      <div className="flex-1 flex gap-2 p-4 overflow-x-auto relative">
         {doctors.map((doctor) => {
           const colors = doctorColors[doctor] || { headerBg: "bg-gray-300", cardBg: "bg-gray-100" };
           return (
@@ -201,6 +257,16 @@ export default function AppointmentDashboard() {
                       key={h}
                       className="h-16 border-b border-gray-200 cursor-pointer relative"
                       onClick={() => {
+                        if (!selectedDate) return;
+                        const d = new Date(selectedDate);
+                        d.setHours(h, 0, 0, 0);
+                        setForm({ ...emptyForm, doctor: doctor, datetime: d.toISOString() });
+                        setIsModalOpen(true);
+                      }}
+                      onContextMenu={(e) => {
+                        if (a) return;
+                        e.preventDefault();
+                        if (!selectedDate) return;
                         const d = new Date(selectedDate);
                         d.setHours(h, 0, 0, 0);
                         setForm({ ...emptyForm, doctor: doctor, datetime: d.toISOString() });
@@ -211,6 +277,7 @@ export default function AppointmentDashboard() {
                         <div
                           className={`${colors.cardBg} rounded shadow p-2 w-full`}
                           onClick={() => openEdit(a)}
+                          onContextMenu={(e) => openContextMenu(e, a)}
                         >
                           <div className="font-medium">{a.patientName}</div>
                           {a.notes && <div className="text-xs text-gray-700">{a.notes}</div>}
@@ -219,8 +286,8 @@ export default function AppointmentDashboard() {
                           </span>
                         </div>
                       )}
-                      {/* Current time indicator */}
-                      {h === currentHour && (
+                     
+                      {currentHour !== null && currentMinutes !== null && h === currentHour && (
                         <div
                           className="absolute left-0 w-full bg-red-500 h-0.5"
                           style={{ top: `${(currentMinutes / 60) * 64}px` }}
@@ -238,13 +305,56 @@ export default function AppointmentDashboard() {
       </div>
 
       {/* Sağ: Takvim */}
-      <div className="mr-20 w-80 bg-white border-l shadow p-4 overflow-y-auto">
+      <div className="hidden md:block w-80 bg-white border-l shadow p-4 overflow-y-auto">
         <h2 className="text-lg font-semibold mb-4">Takvim</h2>
         <Calendar
-          value={selectedDate}
+          value={selectedDate || new Date()}
           onChange={(value) => setSelectedDate(value as Date)}
         />
       </div>
+
+      {/* Sağ tık menüsü */}
+      {contextMenu.visible && contextMenu.appointment && (
+        <div
+          className="fixed z-50 bg-white shadow-lg rounded border w-56 py-1"
+          style={{ left: contextMenu.x, top: contextMenu.y }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="px-3 py-2 text-xs text-gray-500 border-b">
+            {contextMenu.appointment.patientName}
+          </div>
+          <button
+            className="w-full text-left px-3 py-2 hover:bg-gray-100"
+            onClick={() => {
+              const pid = contextMenu.appointment?.patientId || "";
+              closeContextMenu();
+              router.push(`/patient-list?patientId=${encodeURIComponent(pid)}`);
+            }}
+          >
+            Hasta Bilgileri
+          </button>
+          <button
+            className="w-full text-left px-3 py-2 hover:bg-gray-100"
+            onClick={() => {
+              const id = contextMenu.appointment?.id;
+              closeContextMenu();
+              router.push(`/appointments/${id}`);
+            }}
+          >
+            Tedavi Planı
+          </button>
+          <button
+            className="w-full text-left px-3 py-2 hover:bg-gray-100"
+            onClick={() => {
+              const id = contextMenu.appointment?.id;
+              closeContextMenu();
+              router.push(`/invoice-detail?appointmentId=${id}`);
+            }}
+          >
+            Borç / E-Fatura
+          </button>
+        </div>
+      )}
 
       {/* Modal */}
       {isModalOpen && (

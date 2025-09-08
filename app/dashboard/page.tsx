@@ -13,11 +13,7 @@ export default function DashboardPage() {
   return (
     <div className="flex h-screen w-screen overflow-hidden">
       {/* Sidebar */}
-      <Sidebar
-        isOpen={isSidebarOpen}
-        setIsOpen={setIsSidebarOpen}
-        toggleSidebar={toggleSidebar} // ✅ eklendi
-      />
+    
 
       {/* Dashboard içeriği */}
       <div

@@ -119,10 +119,10 @@ export default function ToothPlanningPage() {
   const clearAll = () => setProcedures([]);
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gray-100 flex-col md:flex-row">
 
       {/* Sol Panel */}
-      <aside className="w-80 bg-gray-800 text-gray-100 p-6 flex flex-col overflow-y-auto">
+      <aside className="w-full md:w-80 bg-gray-800 text-gray-100 p-4 md:p-6 flex flex-col overflow-y-auto">
         <h2 className="text-xl font-bold mb-6">Hasta Planlama</h2>
 
         {/* Hasta Bilgileri */}
@@ -200,10 +200,10 @@ export default function ToothPlanningPage() {
       </aside>
 
       {/* Orta Alan: Diş Şeması */}
-      <main className="flex-1 p-6">
+      <main className="flex-1 p-4 md:p-6">
         <h1 className="text-2xl font-bold mb-6">Tedavi Planlama</h1>
 
-        <div className="bg-white rounded-xl shadow p-4 mb-6">
+        <div className="bg-white rounded-xl shadow p-4 mb-6 overflow-x-auto">
           <h2 className="font-semibold mb-2">Diş Şeması (FDI)</h2>
           <div className="flex justify-center">
             <svg width="1000" height="300" viewBox="0 0 700 300">
