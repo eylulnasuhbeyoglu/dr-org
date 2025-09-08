@@ -47,13 +47,13 @@ export default function NewAddPage() {
     "border border-gray-300 rounded px-2 py-1 text-sm focus:border-blue-400 focus:ring-1 focus:ring-blue-400 outline-none";
 
   return (
-    <div className="flex min-h-screen w-full bg-gray-100">
+    <div className="flex min-h-screen w-full bg-gray-100 dark:bg-gray-900">
       {/* Sidebar */}
 
 
       {/* İçerik */}
-      <div className="flex-1 transition-all duration-300 p-4 md:p-6 max-w-[1200px] mx-auto w-full">
-        <header className="bg-white shadow-md p-4 rounded-md mb-4">
+      <div className="flex-1 transition-all duration-300 p-4 md:p-6 max-w-[1200px] mx-auto w-full text-gray-800 dark:text-gray-100">
+        <header className="bg-white dark:bg-gray-800 shadow-md p-4 rounded-md mb-4">
           <h1 className="text-xl font-bold">🦷 Yeni Hasta Kayıt Kartı</h1>
         </header>
 
@@ -62,7 +62,7 @@ export default function NewAddPage() {
           className="grid grid-cols-1 lg:grid-cols-2 gap-6"
         >
           {/* Sol Sütun */}
-          <div className="bg-white rounded-xl shadow p-4 flex flex-col justify-between">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex flex-col justify-between">
             <div className="space-y-4 overflow-hidden">
               <h2 className="text-lg font-semibold border-b border-gray-200 pb-1">
                 Kişisel Bilgiler
@@ -73,7 +73,7 @@ export default function NewAddPage() {
                   placeholder="Ad"
                   value={formData.name}
                   onChange={(e) => handleChange("name", e.target.value)}
-                  className={inputClass}
+                  className={`${inputClass} dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100`}
                 />
                 <input
                   type="text"
@@ -177,7 +177,7 @@ export default function NewAddPage() {
           </div>
 
           {/* Sağ Sütun */}
-          <div className="bg-white rounded-xl shadow p-4 flex flex-col justify-between">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex flex-col justify-between">
             <div className="space-y-4 overflow-hidden">
               <h2 className="text-lg font-semibold border-b border-gray-200 pb-1">
                 Anamnez

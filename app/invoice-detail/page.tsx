@@ -72,10 +72,10 @@ const InvoicePage = () => {
   const totalDue = (inv: Invoice) => inv.treatments.reduce((sum, t) => sum + (t.price - t.paid), 0);
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
 
 
-      <div className="flex-1 transition-all duration-300">
+      <div className="flex-1 transition-all duration-300 text-gray-800 dark:text-gray-100">
         {/* Header */}
         <div className="flex items-center justify-between p-4 bg-white shadow">
           <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-2xl font-bold">
@@ -86,9 +86,9 @@ const InvoicePage = () => {
 
         <div className="p-4 md:p-6">
           {/* Toplam Tutar */}
-          <div className="mb-6 p-4 bg-white rounded shadow flex justify-between items-center border-l-4 border-blue-400">
-            <span className="font-semibold text-blue-700">Toplam Tutar:</span>
-            <span className="text-xl font-bold text-blue-900">{totalAmount} ₺</span>
+          <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded shadow flex justify-between items-center border-l-4 border-blue-400">
+            <span className="font-semibold text-blue-700 dark:text-blue-300">Toplam Tutar:</span>
+            <span className="text-xl font-bold text-blue-900 dark:text-blue-200">{totalAmount} ₺</span>
           </div>
 
           {/* Filter */}
@@ -107,7 +107,7 @@ const InvoicePage = () => {
           </div>
 
           {/* Table */}
-          <div className="overflow-x-auto bg-white rounded shadow">
+          <div className="overflow-x-auto bg-white dark:bg-gray-800 rounded shadow">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-100">
                 <tr>

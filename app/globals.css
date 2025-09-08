@@ -12,15 +12,75 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark :root {
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Dark mode component defaults */
+.card {
+  @apply bg-white text-gray-800 dark:bg-gray-800 dark:text-gray-100 rounded shadow;
+}
+
+.card-muted {
+  @apply bg-gray-50 text-gray-700 dark:bg-gray-900 dark:text-gray-200 rounded;
+}
+
+.input-base {
+  @apply border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded px-3 py-2;
+}
+
+.table-base thead {
+  @apply bg-gray-200 dark:bg-gray-700;
+}
+
+.table-base tbody tr {
+  @apply dark:border-gray-700;
+}
+
+/* react-calendar dark mode */
+.react-calendar {
+  background-color: #ffffff;
+  color: #111827;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+}
+.dark .react-calendar {
+  background-color: #1f2937; /* gray-800 */
+  color: #f3f4f6; /* gray-100 */
+  border-color: #374151; /* gray-700 */
+}
+.react-calendar__navigation button {
+  padding: 0.5rem;
+}
+.react-calendar__tile {
+  padding: 0.5rem 0.25rem;
+}
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+  background: #e5e7eb;
+}
+.dark .react-calendar__tile:enabled:hover,
+.dark .react-calendar__tile:enabled:focus {
+  background: #374151; /* gray-700 */
+}
+.react-calendar__tile--now {
+  background: #dbeafe; /* blue-100 */
+}
+.dark .react-calendar__tile--now {
+  background: #1e3a8a; /* blue-900 */
+}
+.react-calendar__tile--active {
+  background: #3b82f6; /* blue-500 */
+  color: #ffffff;
+}
+.dark .react-calendar__tile--active {
+  background: #2563eb; /* blue-600 */
+  color: #ffffff;
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Home, Users, Settings, FolderHeart } from "lucide-react";
+import { Home, Users, Settings, FolderHeart, Menu } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import dentalcliniclogo from "@/public/dentalcliniclogo.png";
@@ -16,7 +16,12 @@ const Sidebar = ({ isOpen, setIsOpen, toggleSidebar }: SidebarProps) => {
   const menuItems = [
     { label: "Dashboard", href: "/dashboard", icon: <Home size={20} /> },
     { label: "Users", href: "/users", icon: <Users size={20} /> },
-    { label: "Settings", href: "/invoice-detail", icon: <Settings size={20} /> },
+    { label: "Bildirimler", href: "/notifications", icon: <Settings size={20} /> },
+    { label: "Onam Formları", href: "/consents", icon: <Settings size={20} /> },
+    { label: "Stok Yönetimi", href: "/stock", icon: <Settings size={20} /> },
+    { label: "E-Reçete", href: "/e-prescriptions", icon: <Settings size={20} /> },
+    { label: "Tedavi Listeleri", href: "/treatment-lists", icon: <Settings size={20} /> },
+    { label: "Faturalar", href: "/invoice-detail", icon: <Settings size={20} /> },
     { label: "Yeni Hasta Ekle", href: "/new-add", icon: <Users size={20} /> },
     { label: "Doktor Ekle", href: "/doktorekle", icon: <Settings size={20} /> },
     { label: "Hasta Kayıtları", href: "/patient-list", icon: <FolderHeart size={20} /> },
@@ -30,18 +35,17 @@ const Sidebar = ({ isOpen, setIsOpen, toggleSidebar }: SidebarProps) => {
         style={{ width: isOpen ? 256 : 72 }}
       >
         {/* Logo (tıklanabilir) */}
-        <div
-          className="flex items-center gap-2 p-4 border-b cursor-pointer"
-          onClick={toggleSidebar} // 👈 Logo tıklanınca sidebar aç/kapa
-        >
-          <Image src={dentalcliniclogo} alt="Logo" width={40} height={40} />
-          <span
-            className={`font-bold text-gray-800 transition-all duration-300 ${
-              isOpen ? "opacity-100" : "opacity-0 w-0 overflow-hidden"
-            }`}
-          >
-            Clinic
-          </span>
+        <div className="flex items-center gap-2 p-4 border-b">
+          <button onClick={toggleSidebar} className="flex items-center gap-2">
+            {isOpen ? (
+              <>
+                <Image src={dentalcliniclogo} alt="Logo" width={32} height={32} />
+                <span className="font-bold text-gray-800">Clinic</span>
+              </>
+            ) : (
+              <Menu size={24} />
+            )}
+          </button>
         </div>
 
         {/* Menü */}

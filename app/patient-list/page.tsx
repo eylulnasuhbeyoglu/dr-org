@@ -40,11 +40,11 @@ const HastaListesi = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
   
 
       {/* İçerik */}
-      <main className="p-4 md:p-6">
+      <main className="p-4 md:p-6 text-gray-800 dark:text-gray-100">
         <h2 className="text-2xl font-bold mb-5">Hasta Kayıt Listesi</h2>
 
         {/* Arama ve Filtre */}
@@ -69,10 +69,10 @@ const HastaListesi = () => {
         </div>
 
         {/* Tablo */}
-        <div className="overflow-x-auto shadow-md rounded-lg bg-white">
-          <table className="w-full text-left border-collapse">
+        <div className="overflow-x-auto shadow-md rounded-lg bg-white dark:bg-gray-800">
+          <table className="w-full text-left border-collapse table-base">
             <thead>
-              <tr className="bg-gray-200">
+              <tr className="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100">
                 <th className="p-3">Fotoğraf</th>
                 <th className="p-3">Ad Soyad</th>
                 <th className="p-3">TC Kimlik</th>

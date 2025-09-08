@@ -119,7 +119,7 @@ export default function ToothPlanningPage() {
   const clearAll = () => setProcedures([]);
 
   return (
-    <div className="flex min-h-screen bg-gray-100 flex-col md:flex-row">
+    <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900 flex-col md:flex-row">
 
       {/* Sol Panel */}
       <aside className="w-full md:w-80 bg-gray-800 text-gray-100 p-4 md:p-6 flex flex-col overflow-y-auto">
@@ -200,10 +200,10 @@ export default function ToothPlanningPage() {
       </aside>
 
       {/* Orta Alan: Diş Şeması */}
-      <main className="flex-1 p-4 md:p-6">
+      <main className="flex-1 p-4 md:p-6 text-gray-800 dark:text-gray-100">
         <h1 className="text-2xl font-bold mb-6">Tedavi Planlama</h1>
 
-        <div className="bg-white rounded-xl shadow p-4 mb-6 overflow-x-auto">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-4 mb-6 overflow-x-auto">
           <h2 className="font-semibold mb-2">Diş Şeması (FDI)</h2>
           <div className="flex justify-center">
             <svg width="1000" height="300" viewBox="0 0 700 300">
@@ -226,11 +226,11 @@ export default function ToothPlanningPage() {
         </div>
 
         {/* Planlanan İşlemler */}
-        <div className="bg-white rounded-xl shadow p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-4">
           <h3 className="font-semibold mb-2">Planlanan İşlemler</h3>
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Diş</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tedavi</th>
@@ -240,7 +240,7 @@ export default function ToothPlanningPage() {
                   <th className="px-6 py-3 relative"><span className="sr-only">Eylemler</span></th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {procedures.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
@@ -249,11 +249,11 @@ export default function ToothPlanningPage() {
                   </tr>
                 ) : procedures.map((p, i) => (
                   <tr key={i}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{p.tooth}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{p.treatment}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{p.doctor}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{p.note || "—"}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{p.tooth}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{p.treatment}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{p.doctor}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{p.note || "—"}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
                       {new Date(p.date).toLocaleDateString("tr-TR", {
                         day: "2-digit", month: "2-digit", year: "numeric",
                         hour: "2-digit", minute: "2-digit"

@@ -26,11 +26,11 @@ const SAMPLE_DOCTORS = [
   "Notlar ",
 ];
 
-const doctorColors: Record<string, { headerBg: string; cardBg: string }> = {
-  "Dr. Ayşe Kaya": { headerBg: "bg-purple-600 text-white", cardBg: "bg-purple-100" },
-  "Dr. Mehmet Can": { headerBg: "bg-green-600 text-white", cardBg: "bg-green-100" },
-  "Dr. Selin Yıldız": { headerBg: "bg-blue-600 text-white", cardBg: "bg-blue-100" },
-  "Notlar ": { headerBg: "bg-yellow-400 text-black", cardBg: "bg-yellow-100" },
+const doctorColors: Record<string, { headerBg: string; cardBg: string; text?: string }> = {
+  "Dr. Ayşe Kaya": { headerBg: "bg-purple-600 text-white", cardBg: "bg-purple-100 dark:bg-purple-900/40", text: "text-gray-900 dark:text-gray-100" },
+  "Dr. Mehmet Can": { headerBg: "bg-green-600 text-white", cardBg: "bg-green-100 dark:bg-green-900/40", text: "text-gray-900 dark:text-gray-100" },
+  "Dr. Selin Yıldız": { headerBg: "bg-blue-600 text-white", cardBg: "bg-blue-100 dark:bg-blue-900/40", text: "text-gray-900 dark:text-gray-100" },
+  "Notlar ": { headerBg: "bg-yellow-400 text-black", cardBg: "bg-yellow-100 dark:bg-yellow-900/40", text: "text-gray-900 dark:text-gray-100" },
 };
 
 const initialAppointments: Appointment[] = [
@@ -232,7 +232,7 @@ export default function AppointmentDashboard() {
   });
 
   return (
-    <div className=" flex h-screen w-screen bg-gray-50 text-gray-800 overflow-hidden">
+    <div className=" flex h-screen w-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 overflow-hidden">
       {/* Sol: Saatler */}
       <div className="ml-2 flex flex-col w-12 items-center text-gray-500 text-xs p-2 border-r border-gray-300">
         {hours.map((h) => (
@@ -245,7 +245,7 @@ export default function AppointmentDashboard() {
       {/* Orta: Doktor Slotları */}
       <div className="flex-1 flex gap-2 p-4 overflow-x-auto relative">
         {doctors.map((doctor) => {
-          const colors = doctorColors[doctor] || { headerBg: "bg-gray-300", cardBg: "bg-gray-100" };
+          const colors = doctorColors[doctor] || { headerBg: "bg-gray-300 dark:bg-gray-700", cardBg: "bg-gray-100 dark:bg-gray-800", text: "text-gray-900 dark:text-gray-100" } as any;
           return (
             <div key={doctor} className="flex flex-col w-64 min-w-[16rem] border border-gray-300 rounded relative">
               <h4 className={`font-semibold mb-2 pb-1 rounded-t px-3 ${colors.headerBg}`}>{doctor}</h4>
@@ -275,12 +275,12 @@ export default function AppointmentDashboard() {
                     >
                       {a && (
                         <div
-                          className={`${colors.cardBg} rounded shadow p-2 w-full`}
+                          className={`${colors.cardBg} ${colors.text || "text-gray-900 dark:text-gray-100"} rounded shadow p-2 w-full`}
                           onClick={() => openEdit(a)}
                           onContextMenu={(e) => openContextMenu(e, a)}
                         >
                           <div className="font-medium">{a.patientName}</div>
-                          {a.notes && <div className="text-xs text-gray-700">{a.notes}</div>}
+                          {a.notes && <div className="text-xs text-gray-700 dark:text-gray-300">{a.notes}</div>}
                           <span className={`px-1 py-0.5 rounded text-xs ${statusColor(a.status)}`}>
                             {a.status}
                           </span>
@@ -305,7 +305,7 @@ export default function AppointmentDashboard() {
       </div>
 
       {/* Sağ: Takvim */}
-      <div className="hidden md:block w-80 bg-white border-l shadow p-4 overflow-y-auto">
+      <div className="hidden md:block shrink-0 w-80 bg-white dark:bg-gray-800 border-l shadow p-4 overflow-y-auto">
         <h2 className="text-lg font-semibold mb-4">Takvim</h2>
         <Calendar
           value={selectedDate || new Date()}
@@ -316,15 +316,15 @@ export default function AppointmentDashboard() {
       {/* Sağ tık menüsü */}
       {contextMenu.visible && contextMenu.appointment && (
         <div
-          className="fixed z-50 bg-white shadow-lg rounded border w-56 py-1"
+          className="fixed z-50 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 shadow-lg rounded border dark:border-gray-700 w-56 py-1"
           style={{ left: contextMenu.x, top: contextMenu.y }}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="px-3 py-2 text-xs text-gray-500 border-b">
+          <div className="px-3 py-2 text-xs text-gray-500 dark:text-gray-300 border-b dark:border-gray-700">
             {contextMenu.appointment.patientName}
           </div>
           <button
-            className="w-full text-left px-3 py-2 hover:bg-gray-100"
+            className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
             onClick={() => {
               const pid = contextMenu.appointment?.patientId || "";
               closeContextMenu();
@@ -334,7 +334,7 @@ export default function AppointmentDashboard() {
             Hasta Bilgileri
           </button>
           <button
-            className="w-full text-left px-3 py-2 hover:bg-gray-100"
+            className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
             onClick={() => {
               const id = contextMenu.appointment?.id;
               closeContextMenu();
@@ -344,7 +344,7 @@ export default function AppointmentDashboard() {
             Tedavi Planı
           </button>
           <button
-            className="w-full text-left px-3 py-2 hover:bg-gray-100"
+            className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
             onClick={() => {
               const id = contextMenu.appointment?.id;
               closeContextMenu();
@@ -358,12 +358,12 @@ export default function AppointmentDashboard() {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-lg shadow-lg w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">{editing ? "Randevu Düzenle" : "Yeni Randevu Ekle"}</h3>
               <button
-                className="text-gray-500 text-xl leading-none"
+                className="text-gray-500 dark:text-gray-300 text-xl leading-none"
                 onClick={() => setIsModalOpen(false)}
               >
                 ✕
@@ -372,34 +372,34 @@ export default function AppointmentDashboard() {
             <form onSubmit={handleFormSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div className="col-span-1 md:col-span-2 flex gap-2">
                 <input
-                  className="flex-1 border rounded px-3 py-2"
+                  className="flex-1 border rounded px-3 py-2 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
                   placeholder="Hasta Adı Soyadı *"
                   value={form.patientName || ""}
                   onChange={(e) => setForm((f) => ({ ...f, patientName: e.target.value }))}
                   required
                 />
                 <input
-                  className="w-48 border rounded px-3 py-2"
+                  className="w-48 border rounded px-3 py-2 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
                   placeholder="TC / Hasta ID"
                   value={form.patientId || ""}
                   onChange={(e) => setForm((f) => ({ ...f, patientId: e.target.value }))}
                 />
               </div>
               <input
-                className="border rounded px-3 py-2"
+                className="border rounded px-3 py-2 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
                 placeholder="Telefon *"
                 value={form.phone || ""}
                 onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
                 required
               />
               <input
-                className="border rounded px-3 py-2"
+                className="border rounded px-3 py-2 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
                 placeholder="E-posta"
                 value={form.email || ""}
                 onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
               />
               <select
-                className="border rounded px-3 py-2"
+                className="border rounded px-3 py-2 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
                 value={form.doctor || ""}
                 onChange={(e) => setForm((f) => ({ ...f, doctor: e.target.value }))}
                 required
@@ -413,13 +413,13 @@ export default function AppointmentDashboard() {
               </select>
               <input
                 type="datetime-local"
-                className="border rounded px-3 py-2"
+                className="border rounded px-3 py-2 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
                 value={form.datetime ? new Date(form.datetime).toISOString().substring(0, 16) : ""}
                 onChange={(e) => setForm((f) => ({ ...f, datetime: e.target.value }))}
                 required
               />
               <select
-                className="border rounded px-3 py-2"
+                className="border rounded px-3 py-2 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
                 value={form.status || "Beklemede"}
                 onChange={(e) => setForm((f) => ({ ...f, status: e.target.value as Status }))}
               >
@@ -428,7 +428,7 @@ export default function AppointmentDashboard() {
                 <option value="İptal">İptal</option>
               </select>
               <textarea
-                className="col-span-1 md:col-span-2 border rounded px-3 py-2"
+                className="col-span-1 md:col-span-2 border rounded px-3 py-2 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
                 placeholder="Not / Açıklama"
                 value={form.notes || ""}
                 onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
