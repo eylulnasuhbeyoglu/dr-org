@@ -93,7 +93,7 @@ export default function NotificationsPage() {
         ) : (
           <ul>
             {filtered.map((n) => (
-              <li key={n.id} className={`p-4 border-b dark:border-gray-700 last:border-b-0 ${n.read ? "bg-white dark:bg-gray-800" : "bg-blue-50 dark:bg-blue-900/30"}`}>
+              <li key={n.id} className={`p-4 border-b border-gray-200 dark:border-gray-700 last:border-b-0 ${n.read ? "bg-white dark:bg-gray-800" : "bg-blue-50 dark:bg-blue-900/30"}`}>
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-sm text-gray-500 dark:text-gray-300">{new Date(n.createdAt).toLocaleString("tr-TR")}</div>

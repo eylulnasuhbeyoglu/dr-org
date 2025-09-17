@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Calendar } from "react-calendar";
 import "react-calendar/dist/Calendar.css";
@@ -23,6 +23,7 @@ const SAMPLE_DOCTORS = [
   "Dr. Ayşe Kaya",
   "Dr. Mehmet Can",
   "Dr. Selin Yıldız",
+  
   "Notlar ",
 ];
 
@@ -91,6 +92,8 @@ export default function AppointmentDashboard() {
 
   const [currentHour, setCurrentHour] = useState<number | null>(null);
   const [currentMinutes, setCurrentMinutes] = useState<number | null>(null);
+  const doctorColRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const [storedDoctorNames, setStoredDoctorNames] = useState<string[]>([]);
 
   // Sağ tık menüsü durumu
   const [contextMenu, setContextMenu] = useState<{
@@ -120,16 +123,40 @@ export default function AppointmentDashboard() {
   }, []);
 
   useEffect(() => {
+    try {
+      const raw = localStorage.getItem("doctors");
+      if (raw) {
+        const arr = JSON.parse(raw) as Array<{ firstName?: string; lastName?: string }>;
+        const names = arr.map(d => `${(d.firstName||"").trim()} ${(d.lastName||"").trim()}`.trim()).filter(Boolean);
+        setStoredDoctorNames(names);
+      }
+      const url = new URL(window.location.href);
+      const q = url.searchParams.get("doctor");
+      const ls = localStorage.getItem("selectedDoctor") || localStorage.getItem("preferredDoctor");
+      if (q) setSelectedDoctor(q);
+      else if (ls) setSelectedDoctor(ls);
+    } catch {}
+  }, []);
+
+  const doctors = useMemo(() => {
+    const fromAppointments = Array.from(new Set(appointments.map((a) => a.doctor))).filter(Boolean);
+    return Array.from(new Set([...SAMPLE_DOCTORS, ...fromAppointments, ...storedDoctorNames]));
+  }, [appointments, storedDoctorNames]);
+
+  useEffect(() => {
+    if (!selectedDoctor) return;
+    const el = doctorColRefs.current[selectedDoctor];
+    if (el) el.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+  }, [selectedDoctor, doctors]);
+
+  useEffect(() => {
     if (!isModalOpen) {
       setForm(emptyForm);
       setEditing(null);
     }
   }, [isModalOpen]);
 
-  const doctors = useMemo(() => {
-    const fromAppointments = Array.from(new Set(appointments.map((a) => a.doctor))).filter(Boolean);
-    return Array.from(new Set([...SAMPLE_DOCTORS, ...fromAppointments]));
-  }, [appointments]);
+  
 
   const filtered = useMemo(() => {
     return appointments.filter((a) => {
@@ -243,11 +270,15 @@ export default function AppointmentDashboard() {
       </div>
 
       {/* Orta: Doktor Slotları */}
-      <div className="flex-1 flex gap-2 p-4 overflow-x-auto relative">
+      <div className="flex-1 min-w-0 flex flex-wrap content-start gap-2 p-4 overflow-x-hidden overflow-y-auto relative">
         {doctors.map((doctor) => {
           const colors = doctorColors[doctor] || { headerBg: "bg-gray-300 dark:bg-gray-700", cardBg: "bg-gray-100 dark:bg-gray-800", text: "text-gray-900 dark:text-gray-100" } as any;
           return (
-            <div key={doctor} className="flex flex-col w-64 min-w-[16rem] border border-gray-300 rounded relative">
+            <div
+              key={doctor}
+              ref={(el) => { doctorColRefs.current[doctor] = el; }}
+              className={`flex flex-col flex-1 min-w-[14rem] max-w-[20rem] border border-gray-300 rounded relative ${selectedDoctor === doctor ? "ring-2 ring-blue-500" : ""}`}
+            >
               <h4 className={`font-semibold mb-2 pb-1 rounded-t px-3 ${colors.headerBg}`}>{doctor}</h4>
               <div className="flex-1 flex flex-col relative">
                 {hours.map((h) => {

@@ -12,7 +12,7 @@
   --font-mono: var(--font-geist-mono);
 }
 
-.dark :root {
+.dark {
   --background: #0a0a0a;
   --foreground: #ededed;
 }

@@ -50,9 +50,9 @@ export default function EPrescriptionsPage() {
       <div className="bg-white dark:bg-gray-800 rounded shadow p-4 mb-6 grid grid-cols-1 md:grid-cols-4 gap-3 relative">
         <input value={drug.name} onChange={e => setDrug({ ...drug, name: e.target.value })} placeholder="İlaç Adı" className="border rounded px-3 py-2 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100" />
         {suggestions.length > 0 && (
-          <div className="absolute z-10 mt-12 w-full md:w-1/4 bg-white dark:bg-gray-900 border dark:border-gray-700 rounded shadow">
+          <div className="absolute z-10 mt-12 w-full md:w-1/4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded shadow">
             {suggestions.map(s => (
-              <button key={s} className="block w-full text-left px-3 py-2 hover:bg-gray-50" onClick={() => setDrug({ ...drug, name: s })}>{s}</button>
+              <button key={s} className="block w-full text-left px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700" onClick={() => setDrug({ ...drug, name: s })}>{s}</button>
             ))}
           </div>
         )}

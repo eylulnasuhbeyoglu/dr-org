@@ -11,6 +11,8 @@ export default function StockPage() {
   const [form, setForm] = useState<Partial<Item>>({ name: "", sku: "", qty: 0, min: 10, unit: "adet" });
   const [categoryFilter, setCategoryFilter] = useState<string>("");
 
+
+
   useEffect(() => {
     const saved = localStorage.getItem("stockItems");
     if (saved) setItems(JSON.parse(saved));
@@ -47,28 +49,28 @@ export default function StockPage() {
   const filtered = useMemo(() => items.filter(i => !categoryFilter || i.category === categoryFilter), [items, categoryFilter]);
 
   return (
-    <div className="p-4 md:p-6 text-gray-800 dark:text-gray-100">
+    <div className="p-4 md:p-6 text-gray-100 bg-gray-300 min-h-screen">
       <h1 className="text-2xl font-bold mb-4">Stok Yönetimi</h1>
 
       {lowStock.length > 0 && (
-        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
+        <div className="mb-4 p-3 bg-yellow-700 text-yellow-100 border border-yellow-600 rounded">
           Düşük stok uyarısı: {lowStock.map(i => i.name).join(", ")}
         </div>
       )}
 
-      <div className="bg-white dark:bg-gray-800 rounded shadow p-4 mb-6 grid grid-cols-1 md:grid-cols-6 gap-3">
-        <input placeholder="Ürün Adı" value={form.name || ""} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className="border rounded px-3 py-2 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100" />
-        <input placeholder="SKU" value={form.sku || ""} onChange={e => setForm(f => ({ ...f, sku: e.target.value }))} className="border rounded px-3 py-2 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100" />
-        <input type="number" placeholder="Miktar" value={form.qty ?? 0} onChange={e => setForm(f => ({ ...f, qty: Number(e.target.value) }))} className="border rounded px-3 py-2 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100" />
-        <input type="number" placeholder="Asgari" value={form.min ?? 0} onChange={e => setForm(f => ({ ...f, min: Number(e.target.value) }))} className="border rounded px-3 py-2 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100" />
-        <select value={form.category || "Genel"} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} className="border rounded px-3 py-2 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100">
+      <div className="bg-gray-800 rounded shadow p-4 mb-6 grid grid-cols-1 md:grid-cols-6 gap-3">
+        <input placeholder="Ürün Adı" value={form.name || ""} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className="border rounded px-3 py-2 bg-gray-700 border-gray-600 text-gray-100" />
+        <input placeholder="SKU" value={form.sku || ""} onChange={e => setForm(f => ({ ...f, sku: e.target.value }))} className="border rounded px-3 py-2 bg-gray-700 border-gray-600 text-gray-100" />
+        <input type="number" placeholder="Miktar" value={form.qty ?? 0} onChange={e => setForm(f => ({ ...f, qty: Number(e.target.value) }))} className="border rounded px-3 py-2 bg-gray-700 border-gray-600 text-gray-100" />
+        <input type="number" placeholder="Asgari" value={form.min ?? 0} onChange={e => setForm(f => ({ ...f, min: Number(e.target.value) }))} className="border rounded px-3 py-2 bg-gray-700 border-gray-600 text-gray-100" />
+        <select value={form.category || "Genel"} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} className="border rounded px-3 py-2 bg-gray-700 border-gray-600 text-gray-100">
           <option>Genel</option>
           <option>Hijyen</option>
           <option>Protez</option>
           <option>İmplant</option>
         </select>
         <div className="flex gap-2">
-          <select value={form.unit} onChange={e => setForm(f => ({ ...f, unit: e.target.value }))} className="border rounded px-3 py-2 flex-1 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100">
+          <select value={form.unit} onChange={e => setForm(f => ({ ...f, unit: e.target.value }))} className="border rounded px-3 py-2 flex-1 bg-gray-700 border-gray-600 text-gray-100">
             <option value="adet">adet</option>
             <option value="kutu">kutu</option>
             <option value="paket">paket</option>
@@ -77,9 +79,9 @@ export default function StockPage() {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded shadow p-3 mb-3 flex gap-2 items-center">
-        <label className="text-sm">Kategori:</label>
-        <select value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)} className="border rounded px-3 py-2">
+      <div className="bg-gray-800 rounded shadow p-3 mb-3 flex gap-2 items-center">
+        <label className="text-sm text-gray-100">Kategori:</label>
+        <select value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)} className="border rounded px-3 py-2 bg-gray-700 border-gray-600 text-gray-100">
           <option value="">Tümü</option>
           {categories.map(c => <option key={c} value={c}>{c}</option>)}
         </select>
@@ -91,12 +93,12 @@ export default function StockPage() {
           const url = URL.createObjectURL(blob);
           const a = document.createElement("a");
           a.href = url; a.download = "stok.csv"; a.click(); URL.revokeObjectURL(url);
-        }} className="ml-auto px-3 py-2 border rounded">CSV İndir</button>
+        }} className="ml-auto px-3 py-2 border rounded text-gray-100">CSV İndir</button>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded shadow overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+      <div className="bg-gray-800 rounded shadow overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-700 text-gray-100">
+          <thead className="bg-gray-700">
             <tr>
               <th className="px-4 py-2 text-left text-sm font-semibold">Ürün</th>
               <th className="px-4 py-2 text-left text-sm font-semibold">SKU</th>
@@ -107,9 +109,9 @@ export default function StockPage() {
               <th className="px-4 py-2" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="divide-y divide-gray-700">
             {filtered.map(i => (
-              <tr key={i.id} className={i.qty <= i.min ? "bg-yellow-50" : ""}>
+              <tr key={i.id} className={i.qty <= i.min ? "bg-yellow-700 text-yellow-100" : ""}>
                 <td className="px-4 py-2">{i.name}</td>
                 <td className="px-4 py-2">{i.sku}</td>
                 <td className="px-4 py-2">{i.qty}</td>
@@ -128,10 +130,10 @@ export default function StockPage() {
         </table>
       </div>
 
-      <div className="mt-6 bg-white dark:bg-gray-800 rounded shadow overflow-x-auto">
-        <div className="p-3 font-semibold">Hareket Geçmişi</div>
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+      <div className="mt-6 bg-gray-800 rounded shadow overflow-x-auto">
+        <div className="p-3 font-semibold text-gray-100">Hareket Geçmişi</div>
+        <table className="min-w-full divide-y divide-gray-700 text-gray-100">
+          <thead className="bg-gray-700">
             <tr>
               <th className="px-4 py-2 text-left text-sm font-semibold">Tarih</th>
               <th className="px-4 py-2 text-left text-sm font-semibold">Ürün</th>
@@ -139,7 +141,7 @@ export default function StockPage() {
               <th className="px-4 py-2 text-left text-sm font-semibold">Miktar</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="divide-y divide-gray-700">
             {movements.map(m => {
               const item = items.find(i => i.id === m.itemId);
               return (
@@ -157,5 +159,3 @@ export default function StockPage() {
     </div>
   );
 }
-
-

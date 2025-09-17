@@ -69,8 +69,8 @@ export default function ToothPlanningPage({ patient }: ToothPlanningPageProps) {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <aside className="w-80 bg-gray-800 text-gray-100 p-6 flex flex-col overflow-y-auto">
+    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100">
+      <aside className="w-80 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 p-6 flex flex-col overflow-y-auto">
         <h2 className="text-xl font-bold mb-6">Hasta Planlama</h2>
         <div className="mb-6">
           <h3 className="text-sm font-semibold text-gray-400 mb-2">HASTA BİLGİLERİ</h3>
@@ -79,14 +79,14 @@ export default function ToothPlanningPage({ patient }: ToothPlanningPageProps) {
             <li><span className="font-semibold">Soyadı:</span> {patient.surname}</li>
           </ul>
         </div>
-        <hr className="border-gray-700 mb-6" />
+        <hr className="border-gray-200 dark:border-gray-700 mb-6" />
         {Object.entries(DEPARTMENTS).map(([dept, treatments]) => {
           const isOpen = openDepartments[dept];
           return (
             <div key={dept} className="mb-3">
               <button
                 onClick={() => setOpenDepartments(prev => ({ ...prev, [dept]: !prev[dept] }))}
-                className="w-full text-left py-2 px-3 bg-gray-700 rounded flex justify-between items-center"
+                className="w-full text-left py-2 px-3 bg-gray-100 dark:bg-gray-700 rounded flex justify-between items-center"
               >
                 <span>{dept}</span>
                 <span>{isOpen ? "▲" : "▼"}</span>
@@ -97,7 +97,7 @@ export default function ToothPlanningPage({ patient }: ToothPlanningPageProps) {
                     <li key={t}>
                       <button
                         onClick={() => setSelectedTreatment(t)}
-                        className={`w-full text-left py-1 px-2 rounded text-sm ${selectedTreatment === t ? "bg-blue-600 text-white" : "hover:bg-gray-600"}`}
+                        className={`w-full text-left py-1 px-2 rounded text-sm ${selectedTreatment === t ? "bg-blue-600 text-white" : "hover:bg-gray-200 dark:hover:bg-gray-600"}`}
                       >{t}</button>
                     </li>
                   ))}
@@ -107,21 +107,21 @@ export default function ToothPlanningPage({ patient }: ToothPlanningPageProps) {
           );
         })}
         <div className="mt-6">
-          <h3 className="text-sm font-semibold text-gray-400 mb-2">Hekim Seç</h3>
-          <select value={selectedDoctor} onChange={(e) => setSelectedDoctor(e.target.value)} className="w-full border rounded p-2 text-sm bg-gray-50 text-gray-900">
+          <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-2">Hekim Seç</h3>
+          <select value={selectedDoctor} onChange={(e) => setSelectedDoctor(e.target.value)} className="w-full border rounded p-2 text-sm bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100">
             <option value="">-- Hekim Seç --</option>
             {DOCTORS.map(d => <option key={d} value={d}>{d}</option>)}
           </select>
         </div>
         <div className="mt-4">
-          <h3 className="text-sm font-semibold text-gray-400 mb-2">Not Ekle</h3>
-          <textarea value={note} onChange={(e) => setNote(e.target.value)} className="w-full border rounded p-2 text-sm" rows={3} placeholder="Not ekle..." />
+          <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-2">Not Ekle</h3>
+          <textarea value={note} onChange={(e) => setNote(e.target.value)} className="w-full border rounded p-2 text-sm bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100" rows={3} placeholder="Not ekle..." />
         </div>
       </aside>
 
       <main className="flex-1 p-6">
         <h1 className="text-2xl font-bold mb-6">Tedavi Planlama</h1>
-        <div className="bg-white rounded-xl shadow p-4 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-4 mb-6">
           <h2 className="font-semibold mb-2">Diş Şeması (FDI)</h2>
           <div className="flex justify-center">
             <svg width="1000" height="300" viewBox="0 0 700 300">
@@ -138,11 +138,11 @@ export default function ToothPlanningPage({ patient }: ToothPlanningPageProps) {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-4">
           <h3 className="font-semibold mb-2">Planlanan İşlemler</h3>
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
                   <th>Diş</th>
                   <th>Tedavi</th>
@@ -151,7 +151,7 @@ export default function ToothPlanningPage({ patient }: ToothPlanningPageProps) {
                   <th>Eylemler</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {procedures.length === 0 ? (
                   <tr><td colSpan={5} className="text-center text-sm text-gray-500">Henüz işlem eklenmedi.</td></tr>
                 ) : procedures.map((p,i) => (
